@@ -1,48 +1,44 @@
-#include <iostream>
-#include <string>
-
-//include opencv core
-#include "opencv2\core\core.hpp"
-#include "opencv2\core.hpp"
-#include "opencv2\face.hpp"
-#include "opencv2\highgui\highgui.hpp"
-#include "opencv2\objdetect\objdetect.hpp"
-#include "opencv2\opencv.hpp"
-#include<direct.h>
-
-//file handling
-#include <fstream>
-#include <sstream>
+#include<opencv2/imgcodecs.hpp>
+#include<opencv2/highgui.hpp>
+#include<opencv2/imgproc.hpp>
+#include<opencv2/objdetect.hpp>
+#include<iostream>
 
 using namespace std;
 using namespace cv;
-using namespace cv::face;
 
-CascadeClassifier face_cascade;
-string filename;
-string name;
-int filenumber = 0;
+/*void main() {
+	string path = "chando.jpg";
+	Mat	img = imread(path);
+	imshow("Frame", img);
+	waitKey(0);
+}*/
 
-void detectAndDisplay(Mat frame)
-{
-	vector<Rect> faces;
-	Mat frame_gray;
-	Mat crop;
-	Mat res;
-	Mat gray;
-	string text;
-	stringstream sstm;
+void main() {
+	VideoCapture video(1);
+	CascadeClassifier facedetect;
+	Mat img;
+	facedetect.load("haarcascade_frontalface_default.xml");
+	
+	while (true) {
+		video.read(img);
 
-	cvtColor(frame, frame_gray, COLOR_BGR2GRAY);
-	equalizeHist(frame_gray, frame_gray);
+		vector<Rect> faces;
 
-	face_cascade.detectMultiScale(frame_gray, faces, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(30, 30));
+		facedetect.detectMultiScale(img, faces, 1.3, 5);
 
-	Rect roi_b;
-	Rect roi_c;
+		cout << faces.size() << endl;
 
-	size_t ic = 0;
-	int ac = 0;
+		for (int i = 0; i < faces.size(); i++) {
+			rectangle(img, faces[i].tl(), faces[i].br(), Scalar(50, 50, 255), 3);
+			rectangle(img, Point(0,0), Point(250,70), Scalar(50, 50, 255), FILLED);
+			putText(img, to_string(faces.size())+" Face Found", Point(10, 40), FONT_HERSHEY_DUPLEX, 1, Scalar(255, 255, 255), 1);
+		}
 
-	size_t ib = 0;
-	int ab = 0;
+		
+		imshow("Frame", img);
+		waitKey(1);
+		
+
+	}
+}
